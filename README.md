@@ -13,7 +13,7 @@
 ![Static Badge](https://img.shields.io/badge/built_with_apples-%239333EA)
 [![Discord](https://img.shields.io/discord/1263512148450082837?logo=discord&logoColor=white&label=discord&color=4d3dff)](https://discord.gg/MWHgn8VNZT)
 
-Argeon is a lightweight instance downloader for [PrismLauncher](https://prismlauncher.org) and the **official Minecraft launcher**. It makes downloading instances for Events, Servers, etc... easier for inexperienced users. This project must be used along with the [Argeon backend panel](https://github.com) (used to manage installable instances)
+Argeon (ar-gay-on) is a lightweight instance downloader for [PrismLauncher](https://prismlauncher.org) and the **official Minecraft launcher**. It makes downloading instances for Events, Servers, etc... easier for inexperienced users. This project must be used along with the [Argeon backend panel](https://github.com) (used to manage installable instances)
 
 The latest version is available on the [Releases](https://github.com/Communivents/argeon/releases/latest) page. For more recent builds, see the [nightly releases](https://nightly.link/Communivents/argeon/workflows/build/main?preview).
 
