@@ -13,7 +13,7 @@
 ![Static Badge](https://img.shields.io/badge/built_with_apples-%239333EA)
 [![Discord](https://img.shields.io/discord/1263512148450082837?logo=discord&logoColor=white&label=discord&color=4d3dff)](https://discord.gg/MWHgn8VNZT)
 
-Argeon is a lightweight instance downloader for [PrismLauncher](https://prismlauncher.org) and the **official Ninecraft launcher**. It makes downloading instances for Events, Servers, etc... easier for unexperienced users. This project must be used along the [Argeon backend panel](https://github.com) (used to manage installable instances)
+Argeon is a lightweight instance downloader for [PrismLauncher](https://prismlauncher.org) and the **official Minecraft launcher**. It makes downloading instances for Events, Servers, etc... easier for inexperienced users. This project must be used along with the [Argeon backend panel](https://github.com) (used to manage installable instances)
 
 The latest version is available on the [Releases](https://github.com/Communivents/argeon/releases/latest) page. For more recent builds, see the [nightly releases](https://nightly.link/Communivents/argeon/workflows/build/main?preview).
 
@@ -21,7 +21,7 @@ The latest version is available on the [Releases](https://github.com/Communivent
 
 - Downloading Minecraft instances (mods, configs, resourcepacks, etc...) to the correct folders
 - Supports the official Minecraft launcher and PrismLauncher
-- Cross-platform and lightweight (~2mb of storage and ~30-50 of ram)
+- Cross-platform and lightweight (~2MB of storage and ~30-50MB of RAM)
 - Launch installed instances directly from the app
 - Everything is managed on the backend, the user only has to open the app and press 2 buttons.
 
@@ -44,10 +44,10 @@ Setting up the Argeon development environment:
     ```
 
 Development commands:
-- `npm run  dev`: Start the development environment
-- `bun run build`: Build and package the application
+- `npm run dev`: Start the development environment
+- `npm run build`: Build and package the application
 
-AppleBlox is built using [Svelte](https://svelte.dev) for the frontend and [NeutralinoJS](https://neutralino.js.org) for the backend. NeutralinoJS is a lightweight C++ alternative to Electron or NW.JS, suitable for cross-platform applications. More information is available at [neutralino.js.org/docs](https://neutralino.js.org/docs).
+Argeon is built using [Svelte](https://svelte.dev) for the frontend and [NeutralinoJS](https://neutralino.js.org) for the backend. NeutralinoJS is a lightweight C++ alternative to Electron or NW.JS, suitable for cross-platform applications. More information is available at [neutralino.js.org/docs](https://neutralino.js.org/docs).
 
 ## Contributing
 
