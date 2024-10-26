@@ -76,8 +76,9 @@
 				<!-- Minecraft Button with Emerald Border -->
 				<div class="emerald-border p-[2px] rounded-md hover:scale-[1.02] transition-transform">
 					<Button
+						disabled
 						variant="outline"
-						class="launcher-button w-full flex items-center justify-center gap-2 h-20 m-0 bg-background hover:bg-background/90 transition-colors focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 border-border/60"
+						class="launcher-button w-full flex items-center justify-center gap-2 h-20 m-0 bg-background hover:bg-background/90 transition-colors focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 border-border/60 pointer-events-none"
 						on:click={() => handleInstall('minecraft')}
 					>
 						<img src="/minecraft.png" alt="Minecraft Logo" class="w-8 h-8" />
@@ -154,9 +155,9 @@
 		animation: border-flow 4s linear infinite;
 	}
 
-	.emerald-border:hover {
+	/*.emerald-border:hover {
 		background: linear-gradient(90deg, #064e3b 0%, #059669 25%, #10b981 50%, #059669 75%, #064e3b 100%) 0 0 /
 			200% 100%;
 		animation: border-flow 4s linear infinite;
-	}
+	}*/
 </style>

@@ -113,6 +113,7 @@ async function downloadWithRetry(cmd: string, fullPath: string, filename: string
 
 			if (attempt === maxRetries) {
 				toast.error(`Failed to download ${filename}`);
+				console.error('Command:', cmd);
 				return false;
 			}
 
