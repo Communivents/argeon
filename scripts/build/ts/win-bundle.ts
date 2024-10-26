@@ -21,7 +21,7 @@ export async function winBuild() {
         const appDist = path.resolve(Dist, 'win_' + app);
 
         fs.mkdirSync(appDist, { recursive: true });
-        fs.mkdirSync(path.resolve(Dist, 'installer'), { recursive: true });
+        fs.mkdirSync(path.resolve(Dist, 'win_installer'), { recursive: true });
 
         const l = new Signale({ scope: 'build-win-' + app, interactive: true });
         l.await(`Building win-${app}`);
