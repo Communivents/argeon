@@ -3,7 +3,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Progress } from '$lib/components/ui/progress';
 	import type { InstallationType, InstanceData } from './types';
-	import { createMinecraftInstance } from '@/windows/main/ts/instances/create';
+	import { createMinecraftInstance } from '@/windows/main/ts/instances/instance';
 	import * as AlertDialog from '$lib/components/ui/alert-dialog';
 	import { events } from '@neutralinojs/lib';
 	import { onMount, onDestroy } from 'svelte';
@@ -46,6 +46,7 @@
 			if (!hasBeenCreated) {
 				showReplaceAlertDialog = true;
 			} else {
+				events.broadcast(`check_play:${instance.name}`)
 				onOpenChange(false);
 			}
 		} catch (err) {
