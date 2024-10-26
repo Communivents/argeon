@@ -27,8 +27,7 @@
       "minHeight": 200,
       "icon": "/frontend/public/favicon.png",
       "exitProcessOnClose": false,
-      "useSavedState": false,
-      "enableInspector": true
+      "useSavedState": false
     }
   },
   "cli": {
