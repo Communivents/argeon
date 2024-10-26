@@ -1,6 +1,6 @@
 {
   "name": "argeon",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A simple instance downloader for Communivents",
   "main": "frontend/src/windows/main/main.ts",
   "scripts": {

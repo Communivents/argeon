@@ -1,5 +1,5 @@
 {
-  "applicationId": "ts.neutralino.svelte",
+  "applicationId": "events.argeon.commu",
   "version": "1.0.0",
   "defaultMode": "window",
   "documentRoot": "/frontend/dist",
@@ -27,7 +27,8 @@
       "minHeight": 200,
       "icon": "/frontend/public/favicon.png",
       "exitProcessOnClose": false,
-      "useSavedState": false
+      "useSavedState": false,
+      "enableInspector": true
     }
   },
   "cli": {

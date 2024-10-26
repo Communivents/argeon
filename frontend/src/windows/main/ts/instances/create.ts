@@ -3,7 +3,7 @@ import type { InstallationType, InstanceData, File } from '$lib/components/app/i
 import path from 'path-browserify';
 import { toast } from 'svelte-sonner';
 import { API_URL } from './api';
-import { getArrayBufferFromImageUrl, getBase64FromImageUrl, pathExists } from '../utils';
+import { curlGet, getArrayBufferFromImageUrl, getBase64FromImageUrl, pathExists } from '../utils';
 import CommuniventsIcon from '@/assets/communivents.png';
 
 /** Structure of a progress event during instance creation */
@@ -26,7 +26,6 @@ interface LauncherProfiles {
 interface LauncherProfile {
 	created: string;
 	icon?: string;
-	javaArgs?: string;
 	lastUsed: string;
 	lastVersionId: string;
 	name: string;
@@ -38,14 +37,18 @@ interface LauncherProfile {
 	type: 'custom' | 'latest-release' | 'latest-snapshot';
 }
 
+interface Library {
+	name: string;
+	url: string;
+}
+
 /**
  * Updates or creates a profile in the Minecraft launcher profiles
  * @param minecraftPath Path to .minecraft directory
- * @param instanceName Name of the instance
+ * @param instance Data of the instance
  * @param instancePath Full path to instance directory
- * @param javaArgs Optional Java arguments
  */
-async function updateLauncherProfiles(minecraftPath: string, instanceName: string, instancePath: string, javaArgs?: string): Promise<void> {
+async function updateLauncherProfiles(minecraftPath: string, instance: InstanceData, instancePath: string): Promise<void> {
 	const profilesPath = path.join(minecraftPath, 'launcher_profiles.json');
 	let profiles: LauncherProfiles;
 
@@ -63,22 +66,52 @@ async function updateLauncherProfiles(minecraftPath: string, instanceName: strin
 		}
 
 		// Create unique profile ID
-		const profileId = `communivents_${instanceName.toLowerCase().replace(/[^a-z0-9]/g, '_')}`;
+		const profileId = `communivents_${instance.name.toLowerCase().replace(/[^a-z0-9]/g, '_')}`;
 
 		// Update or create profile
 		profiles.profiles[profileId] = {
 			created: new Date().toISOString(),
 			icon: await getBase64FromImageUrl(CommuniventsIcon),
-			name: instanceName,
+			name: instance.name,
 			lastUsed: new Date().toISOString(),
-			lastVersionId: instanceName,
-			gameDir: instancePath,
+			lastVersionId: instance.name,
+			gameDir: path.join(instancePath, '.minecraft'),
 			type: 'custom',
-			...(javaArgs ? { javaArgs } : {}),
 		};
 
 		// Write updated profiles back to file
 		await filesystem.writeFile(profilesPath, JSON.stringify(profiles, null, 2));
+
+		// Create version folder if it doesn't exist
+		const versionFolderPath = path.join(minecraftPath, 'versions', instance.name);
+		const versionFilePath = path.join(versionFolderPath, `${instance.name}.json`);
+		if (await pathExists(versionFolderPath)) return;
+		await filesystem.createDirectory(versionFolderPath);
+
+		// Get libraries if on fabric
+		const libraries: Library[] = [];
+		if (instance.loader.type === 'fabric') {
+			const meta = await curlGet(`https://meta.fabricmc.net/v2/versions/loader/${instance.minecraft_version}/${instance.loader.version}`);
+			// Intermediary and Loader
+			libraries.push({ name: meta.intermediary.maven, url: 'https://maven.fabricmc.net/' }, { name: meta.loader.maven, url: 'https://maven.fabricmc.net/' });
+			for (const lib of meta.launcherMeta.libraries.common) {
+				libraries.push({ name: lib.name, url: lib.url });
+			}
+		}
+
+		const versionJson = {
+			id: instance.name,
+			inheritsFrom: instance.minecraft_version,
+			type: 'release',
+			mainClass: instance.loader.type === 'vanilla' ? 'net.minecraft.client.main.Main' : 'net.fabricmc.loader.impl.launch.knot.KnotClient',
+			arguments: {
+				game: ['--gameDir', path.join(instancePath, '.minecraft')],
+				jvm: instance.loader.type === 'vanilla' ? [] : ['-DFabricMcEmu= net.minecraft.client.main.Main'],
+			},
+			libraries,
+		};
+		console.info(versionJson);
+		await filesystem.writeFile(versionFilePath, JSON.stringify(versionJson));
 	} catch (error) {
 		console.error('Failed to update launcher profiles:', error);
 		toast.error('Failed to update Minecraft launcher profiles');
@@ -154,8 +187,8 @@ async function downloadFiles(files: File[], targetPath: string, currentFileCount
 			percentage: Math.round(((currentFileCount + 1) / totalFiles) * 100),
 		} as ProgressEvent);
 
-		const cmd = `curl -X GET -L --fail --silent --show-error -H "Accept: application/octet-stream" -o "${fullPath}" "${API_URL}${file.download_url}"`;
-		console.log(`Downloading: ${file.filename}`);
+		const cmd = `curl -X GET -L --fail --silent --show-error -H "Accept: application/octet-stream" -o "${fullPath}" "${API_URL}${encodeURI(file.download_url)}"`;
+		console.info(`Downloading: ${file.filename}`);
 
 		const success = await downloadWithRetry(cmd, fullPath, file.filename);
 		if (!success) {
@@ -220,7 +253,7 @@ async function createMinecraftInstance(instanceData: InstanceData, installationT
 		let basePath: string;
 		switch (window.NL_OS as unknown as string) {
 			case 'Windows':
-				basePath = path.join(homeDir, 'AppData', 'Roaming');
+				basePath = await os.getEnv('APPDATA');
 				break;
 			case 'Darwin':
 				basePath = path.join(homeDir, 'Library', 'Application Support');
@@ -338,9 +371,8 @@ async function createMinecraftInstance(instanceData: InstanceData, installationT
 				await filesystem.writeBinaryFile(iconPath, await getArrayBufferFromImageUrl(CommuniventsIcon));
 			}
 		} else {
-			await filesystem.writeFile(path.join(instancePath, 'instance.json'), JSON.stringify(instanceConfig, null, 2));
 			// Update Minecraft launcher profiles
-			await updateLauncherProfiles(minecraftPath, instanceData.name, instancePath, `-Xmx${instanceData.java.recommended_memory}`);
+			await updateLauncherProfiles(minecraftPath, instanceData, instancePath);
 		}
 
 		// Calculate total files to download
@@ -352,6 +384,7 @@ async function createMinecraftInstance(instanceData: InstanceData, installationT
 
 		// Download all file types to .minecraft directory
 		const minecraftDir = path.join(instancePath, '.minecraft');
+		console.info('Minecraft directory:', minecraftDir);
 
 		// All file types to process
 		const fileTypes = ['mods', 'resourcepacks', 'shaderpacks', 'saves', 'config', 'screenshots', 'logs', 'crash-reports', 'versions', 'assets', 'libraries'] as const;

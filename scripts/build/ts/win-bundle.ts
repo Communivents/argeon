@@ -76,8 +76,11 @@ export async function winBuild() {
 			});
 		}
 
+		// Copy resources.res inside the dist
+		fs.copyFileSync(neuResources, path.join(appDist, 'resources.neu'));
+
 		res.outputResource(exe);
-		fs.writeFileSync(path.resolve(appDist, `${BuildConfig.appName}.exe`), Buffer.from(exe.generate()));
+		fs.writeFileSync(path.resolve(appDist, `${BuildConfig.appName}.exe`), new Uint8Array(exe.generate()));
 		l.complete(`win_${app} built in ${((performance.now() - appTime) / 1000).toFixed(3)}s ${BuildConfig.win.embedResources ? '(Embeded Resources)' : ''}`);
 		console.log('');
 	}
